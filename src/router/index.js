@@ -9,14 +9,14 @@ const router = createRouter({
       name: 'home',
       component: World
     },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue')
-    // }
+    {
+      path: '/ArcGis',
+      name: 'ArcGis',
+      // route level code-splitting
+      // this generates a separate chunk (ArcGis.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import('../views/ArcGis.vue')
+    }
   ]
 })
 
