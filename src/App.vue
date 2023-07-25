@@ -1,13 +1,15 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { getRoutes } from './router/index'
+const routeList = getRoutes()
 </script>
 
 <template>
   <header>
     <div class="wrapper">
       <nav>
-        <RouterLink to="/">World</RouterLink>
-        <RouterLink to="/ArcGis">ArcGis</RouterLink>
+        <RouterLink v-for="item in routeList" :to="item.path" :key="item.name">{{
+          item.title
+        }}</RouterLink>
       </nav>
     </div>
   </header>
@@ -48,5 +50,4 @@ nav a {
 nav a:first-of-type {
   border: 0;
 }
-
 </style>
