@@ -16,16 +16,20 @@ export const getRoutes = () => [
     // this generates a separate chunk (ArcGis.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/ArcGis.vue')
-  }
-  ,
+  },
   {
-    path: '/LonOrLat',
+    path: '/LonOrLat', // 经纬度转换
     name: 'LonOrLat',
     title: 'LonOrLat',
     component: () => import('../views/LonOrLat.vue')
+  },
+  {
+    path: '/PointLineArea', // 点线面制作
+    name: 'PointLineArea',
+    title: 'PointLineArea',
+    component: () => import('../views/PointLineArea.vue')
   }
 ]
-
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
