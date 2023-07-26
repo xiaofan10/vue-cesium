@@ -34,6 +34,12 @@ export const getRoutes = () => [
     name: 'TilesCar',
     title: 'TilesCar',
     component: () => import('../views/tiles/TilesCar.vue')
+  },
+  {
+    path: '/GroupEntities', // 组合广告牌
+    name: 'GroupEntities',
+    title: 'GroupEntities',
+    component: () => import('../views/GroupEntities.vue')
   }
 ]
 
