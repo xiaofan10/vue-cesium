@@ -28,6 +28,12 @@ export const getRoutes = () => [
     name: 'PointLineArea',
     title: 'PointLineArea',
     component: () => import('../views/PointLineArea.vue')
+  },
+  {
+    path: '/TilesCar', // 点线面制作
+    name: 'TilesCar',
+    title: 'TilesCar',
+    component: () => import('../views/tiles/TilesCar.vue')
   }
 ]
 
