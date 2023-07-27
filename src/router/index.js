@@ -40,6 +40,18 @@ export const getRoutes = () => [
     name: 'GroupEntities',
     title: 'GroupEntities',
     component: () => import('../views/GroupEntities.vue')
+  },
+  {
+    path: '/Water', // 水波纹特效
+    name: 'Water',
+    title: 'Water',
+    component: () => import('../views/Water.vue')
+  },
+  {
+    path: '/Trajectory', // 轨迹
+    name: 'Trajectory',
+    title: 'Trajectory',
+    component: () => import('../views/Trajectory.vue')
   }
 ]
 
