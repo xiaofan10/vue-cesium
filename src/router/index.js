@@ -82,6 +82,18 @@ export const getRoutes = () => [
     name: 'Billboard',
     title: 'Billboard',
     component: () => import('../views/Billboard.vue')
+  },
+  {
+    path: '/Primitive', // 广告牌
+    name: 'Primitive',
+    title: 'Primitive',
+    component: () => import('../views/Primitive.vue')
+  },
+  {
+    path: '/Terrain', // 地形
+    name: 'Terrain',
+    title: 'Terrain',
+    component: () => import('../views/Terrain.vue')
   }
 ]
 
