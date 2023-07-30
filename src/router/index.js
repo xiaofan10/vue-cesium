@@ -52,6 +52,36 @@ export const getRoutes = () => [
     name: 'Trajectory',
     title: 'Trajectory',
     component: () => import('../views/Trajectory.vue')
+  },
+  {
+    path: '/TrajectoryCZML', // czml轨迹
+    name: 'TrajectoryCZML',
+    title: 'TrajectoryCZML',
+    component: () => import('../views/TrajectoryCZML.vue')
+  },
+  {
+    path: '/TrajectoryCZMLModel', // czml轨迹
+    name: 'TrajectoryCZMLModel',
+    title: 'TrajectoryCZMLModel',
+    component: () => import('../views/TrajectoryCZMLModel.vue')
+  },
+  {
+    path: '/Polyline', // 多线段
+    name: 'Polyline',
+    title: 'Polyline',
+    component: () => import('../views/Polyline.vue')
+  },
+  {
+    path: '/Camera', // 相机
+    name: 'Camera',
+    title: 'Camera',
+    component: () => import('../views/Camera.vue')
+  },
+  {
+    path: '/Billboard', // 广告牌
+    name: 'Billboard',
+    title: 'Billboard',
+    component: () => import('../views/Billboard.vue')
   }
 ]
 

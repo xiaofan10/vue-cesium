@@ -10,7 +10,7 @@ onMounted(async () => {
   // 先将纽约经纬度转成笛卡尔坐标
   const position = Cesium.Cartesian3.fromDegrees(-73.93854, 40.6643, 100)
 
-  const carTiles = await Cesium.Cesium3DTileset.fromUrl('./public/tiles/car1/tileset.json')
+  const carTiles = await Cesium.Cesium3DTileset.fromUrl('./tiles/car1/tileset.json')
 
   viewer.camera.setView({
     destination: position,

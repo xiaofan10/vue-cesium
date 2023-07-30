@@ -6,13 +6,18 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 
 import cesium from 'vite-plugin-cesium';
 
+import ViteComponents, { AntDesignVueResolver } from 'vite-plugin-components';
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    cesium()
+    cesium(),
+    ViteComponents({
+      customComponentResolvers: [AntDesignVueResolver()],
+    }),
   ],
   resolve: {
     alias: {
