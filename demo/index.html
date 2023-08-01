@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      ul li,
+      ul ol {
+        list-style: none;
+      }
+      i,
+      b,
+      em,
+      strong {
+        font-style: normal;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      #map_house {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .BMap_Marker img {
+        width: 100%;
+      } /* 自定义点图片适应宽高 */
+
+      .adrMapHouse {
+        position: relative;
+        margin: 10px;
+        height: 100%;
+      }
+      .map-class {
+        background: rgba(0, 0, 0, 0.7);
+        height: 30px;
+        line-height: 30px;
+        color: #fff;
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+      .map-class li {
+        float: left;
+        width: 20%;
+        text-align: center;
+      }
+
+      .resultsDiv {
+        width: 90px;
+        height: 40px;
+        line-height: 20px;
+        padding: 25px 0;
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        background: #ffaf00cc;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .results_name {
+        font-size: 16px;
+      }
+      .area_bgred {
+        background: #fb5033bd;
+      }
+
+      .subwayText {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        background: #fff;
+        font-size: 14px;
+        line-height: 40px;
+      }
+      .subwayText li {
+        float: left;
+        margin-right: 30px;
+        cursor: pointer;
+      }
+
+      .stationText {
+        padding: 5px 10px;
+        background: #ffad00;
+        border-radius: 5px;
+        color: #fff;
+        position: relative;
+        left: -30px;
+        top: -53px;
+      }
+      .station {
+        font-size: 13px;
+        height: 20px;
+        position: relative;
+        left: -8px;
+        top: 0;
+        text-align: center;
+      }
+      .station .lineDian {
+        position: absolute;
+        background-color: #fff;
+        width: 12px;
+        height: 12px;
+        border-radius: 24px;
+        left: 3px;
+        top: -5px;
+      }
+
+      .cur_station {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .station_qishi {
+        width: 32px;
+        height: 34px;
+        background: url(https://api.map.baidu.com/images/subway/start-bak.png) no-repeat;
+        background-size: 18px 32px;
+      }
+      .station_zhong {
+        width: 32px;
+        height: 34px;
+        background: url(https://api.map.baidu.com/images/subway/end-bak.png) no-repeat;
+        background-size: 18px 32px;
+      }
+    </style>
+    <!-- <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script> -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="https://api.map.baidu.com/api?v=2.0&ak=sSu2GGscTW2TNPUhgxfNgGqDa1lODeI3"
+    ></script>
+  </head>
+  <body>
+    <div class="adrMapHouse">
+      <div id="map_house"></div>
+    </div>
+    <ul class="subwayText">
+      <li type="1" name="1号线" num="0">1号线</li>
+      <li type="2" name="2号线" num="0">2号线</li>
+      <li type="4" name="4号线" num="0">4号线</li>
+      <li type="5" name="5号线" num="0">5号线</li>
+      <li type="6" name="6号线" num="0">6号线</li>
+      <li type="7" name="7号线" num="0">7号线</li>
+      <li type="8" name="8号线" num="0">8号线</li>
+      <li type="144" name="8号线" num="2">8号线南段</li>
+      <li type="9" name="9号线" num="0">9号线</li>
+      <li type="10" name="10号线" num="0">10号线</li>
+      <li type="13" name="13号线" num="0">13号线</li>
+      <li type="141" name="14号线" num="2">14号线(西)</li>
+      <li type="142" name="14号线" num="0">14号线(东)</li>
+      <li type="15" name="15号线" num="0">15号线</li>
+      <li type="16" name="16号线" num="0">16号线</li>
+      <li type="90" name="八通线" num="0">八通线</li>
+      <li type="91" name="昌平线" num="0">昌平线</li>
+      <li type="92" name="亦庄线" num="0">亦庄线</li>
+      <li type="93" name="房山线" num="0">房山线</li>
+      <li type="94" name="机场线" num="0">机场线</li>
+      <li type="95" name="S1线" num="0">S1线</li>
+      <li type="96" name="燕房线" num="0">燕房线</li>
+      <li type="97" name="西郊线" num="0">西郊线</li>
+      <li type="143" name="大兴机场线" num="0">大兴机场线</li>
+      <li type="143" name="10号线" num="0" second="十里河">十里河</li>
+    </ul>
+    <script type="text/javascript">
+      //地铁线颜色数据
+      let lineColorData = {
+        '1号线': '#CC0000',
+        '2号线': '#0065B3',
+        '3号线': '#F9E103',
+        '4号线': '#008187',
+        '5号线': '#A61D7F',
+        '6号线': '#D0970A',
+        '7号线': '#F8BE58',
+        '8号线': '#018237',
+        '9号线': '#86B81C',
+        '10号线': '#019AC3',
+        '13号线': '#FBD600',
+        '14号线': '#E4A8A3',
+        '15号线': '#793E8C',
+        '16号线': '#6CB46B',
+        八通线: '#CC0000',
+        昌平线: '#EB81B9',
+        亦庄线: '#F0087D',
+        房山线: '#EE782E',
+        首都机场线: '#A49ABD',
+        大兴机场线: '#2249A3',
+        S1线: '#B35A1F',
+        燕房线: '#EE782E',
+        西郊线: '#FC0601'
+      }
+
+      let cityname = '北京'
+
+      let longitude = '116.39147' //x  121.500463486  116.39147
+      let latitude = '39.90555' //  31.2359216994  39.90555
+
+      let stationLabel //地铁线label
+      let levelmap = 13 //显示级别
+
+      let icon = new BMap.Icon('images/x_adr_icon.png', new BMap.Size(42, 53)) //自定义当前位置图标
+      let baiduMap = new BMap.Map('map_house') //创建地图
+      let myPoint = new BMap.Point(longitude, latitude) //创建地图坐标点,一般首次创建的这个点为地图的中心坐标点
+      let marker = new BMap.Marker(myPoint, { icon: icon }) //创建自定义标注
+      let retrunLineColor //当前点击地铁线颜色
+
+      let stationObj = {
+        lineName: '', //地铁线名字
+        stationname: '', //地铁站名字，没有传''
+        lng: '',
+        lat: '',
+        itemNum: '', //getBusListItem取值，西段或东段  南段或北段   一般西段getBusListItem(0)  东段getBusListItem(2)
+        zoom: 13 //地图级别
+      }
+
+      // 添加控件
+      let navigationControl = new BMap.NavigationControl({
+        anchor: BMAP_ANCHOR_BOTTOM_RIGHT, //表示控件定位于地图的右下角。
+        // LARGE类型
+        type: BMAP_NAVIGATION_CONTROL_SMALL,
+        //BMAP_NAVIGATION_CONTROL_SMALL 表示显示小型的平移缩放控件。
+        enableGeolocation: false // 启用显示定位
+      })
+
+      // 添加控件 End
+      baiduMap.addControl(navigationControl) //添加控件
+
+      baiduMap.centerAndZoom(myPoint, levelmap) //初始化地图，设置中心坐标点和地图级数
+      baiduMap.enableScrollWheelZoom() //启动鼠标滚轮缩放地图
+
+      // baiduMap.enableKeyboard();//启动键盘操作地图
+
+      baiduMap.setMinZoom(11) //设置地图允许的最小级别。取值不得小于地图类型所允许的最小级别
+
+      baiduMap.clearOverlays() //清除所有的Overlay
+      baiduMap.addOverlay(marker) //初始化地图,设置中心点坐标和地图级别
+
+      let subwaylineData = new BMap.BusLineSearch(baiduMap, {
+        //点击返回的地铁数据
+        // renderOptions:{baiduMap:baiduMap,panel:"r-result"},
+        onGetBusListComplete: function (result) {
+          if (result) {
+            let fstLine = result.getBusListItem(stationObj.itemNum)
+            subwaylineData.getBusLine(fstLine)
+            // console.log('result',result) //这里可以看每号地铁返回数据
+            // console.log('name--',result.getBusListItem(stationObj.itemNum).name)
+          }
+        },
+        onGetBusLineComplete: function (res) {
+          //地铁站的数据
+          let _this = this
+          console.log('res', res)
+          let oLine = res.getPolyline() //获取公交线几何对象
+          // console.log('oLine',oLine)
+          setTimeout(function () {
+            let stationNum = res.getNumBusStations(), //地铁站的个数
+              sNumHalf = Math.floor(stationNum / 2),
+              first = res.getBusStation(0).position,
+              last = res.getBusStation(stationNum - 1).position,
+              linePoint = (res.getBusStation(sNumHalf), oLine.getPath()) //?
+            // console.log('stationNum',stationNum,'sNumHalf',sNumHalf,'first',first,'last',last,'linePoint',linePoint)
+            subwayStyle = new BMap.Polyline(linePoint, {
+              //绘制线
+              strokeColor: retrunLineColor, //地铁线颜色
+              strokeWeight: 8, //地铁线粗细
+              strokeOpacity: 1, //线的透明度
+              enableMassClear: true //禁止清除覆盖物  如果用enableMassClear:false  clearOverlays就无法清除 需要在点击里用循环enableMassClear清除
+            })
+            // console.log('subwayStyle',subwayStyle)
+            let lineStation, //每一站
+              lineStationName, //每一站名
+              lineStationPoint, //每一站经纬度
+              zhongLabel //终点覆盖物
+            for (let i = 0; i < stationNum; i++) {
+              ;(lineStation = res.getBusStation(i)), //每一站
+                (lineStationName = lineStation.name), //每一站名
+                (lineStationPoint = lineStation.position) //每一站经纬度
+              //			    console.log('lineStation--',lineStation);
+
+              let opts = {
+                position: new BMap.Point(lineStationPoint.lng, lineStationPoint.lat), // 指定文本标注所在的地理位置
+                offset: new BMap.Size(-5, -5), //设置文本偏移量
+                enableMassClear: true
+              }
+              stationLabel = new BMap.Label(
+                `<div class="station" data-name="${lineStationName}"><span style="border:2px solid ${retrunLineColor}" class="lineDian"></span></div><div class="stationText">${lineStationName}</div>`,
+                opts
+              )
+              if (stationObj.stationname == lineStationName) {
+                //当前地铁站
+                console.log('lineStationName++', lineStationName)
+                stationLabel = new BMap.Label(
+                  `<div class="station" data-name="${lineStationName}"><span style="border:2px solid ${retrunLineColor}" class="lineDian"></span></div><div class="stationText cur_station">${lineStationName}</div>`,
+                  opts
+                )
+              }
+              let stationStyleOpt = {
+                //给label设置style样式
+                border: 'none',
+                backgroundColor: 'transparent'
+              }
+              stationLabel.setStyle(stationStyleOpt)
+              // baiduMap.clearOverlays();//清除所有的Overlay
+              baiduMap.addOverlay(stationLabel) //将地铁站名字和小圆点 添加到地图上
+              // console.log('stationLabel',stationLabel)
+              $('.station .dian').css('border-color', retrunLineColor) //设置坐标点颜色
+
+              //、、这部分看自己需要加还是不加
+              //绘制地铁线 起点覆盖物
+              let optQi = {
+                position: new BMap.Point(first.lng, first.lat),
+                offset: new BMap.Size(-17, -30), //设置文本偏移量
+                enableMassClear: true
+              }
+            //   let qiLabel = new BMap.Label('<div class="station_qishi"></div>', optQi)
+            //   qiLabel.setStyle(stationStyleOpt)
+            //   baiduMap.addOverlay(qiLabel)
+              //绘制地铁线 终点覆盖物
+            //   let optZhong = {
+            //     position: new BMap.Point(last.lng, last.lat),
+            //     offset: new BMap.Size(-17, -30), //设置文本偏移量
+            //     enableMassClear: true
+            //   }
+            //   zhongLabel = new BMap.Label('<div class="station_zhong"></div>', optZhong)
+            //   zhongLabel.setStyle(stationStyleOpt)
+              //、、这部分看自己需要加还是不加 End
+
+              let latArray = [],
+                lngArray = []
+              for (let i = 0; i < linePoint.length; i++) {
+                latArray.push(linePoint[i].lat)
+                lngArray.push(linePoint[i].lng)
+              }
+              //              console.log('latArray--',latArray);
+              //              console.log('lngArray--',lngArray);
+
+              let latMax = Math.max.apply(null, latArray),
+                latMin = Math.min.apply(null, latArray),
+                lngMax = Math.max.apply(null, lngArray),
+                lngMin = Math.min.apply(null, lngArray)
+              lngLine = (lngMin + lngMax) / 2
+              latLine = (latMax + latMin) / 2
+
+              if (stationObj.stationname != '' && stationObj.stationname == lineStationName) {
+                stationObj.lat = lineStationPoint.lat
+                stationObj.lng = lineStationPoint.lng
+                // console.log('---',lineStationPoint)
+              }
+            }
+
+            if (stationObj.stationname != '') {
+              //地铁站
+              console.log('地铁站', stationObj.stationname, lineStationPoint)
+              point = new BMap.Point(stationObj.lng, stationObj.lat)
+              baiduMap.centerAndZoom(point, 16) //用于初始化地图，设置中心坐标点和地图级数
+            } else {
+              console.log('地铁线')
+              point = new BMap.Point(lngLine, latLine)
+              stationObj.lat = latLine
+              stationObj.lng = lngLine
+              baiduMap.centerAndZoom(point, 13) //用于初始化地图，设置中心坐标点和地图级数
+              // baiduMap.panTo(point,12);//修改地图的中心点，并且移动过去，但是我点地铁站十里河 发现闪，不知道什么原因，最后没用这个
+            }
+            // baiduMap.centerAndZoom(point, 13);//设置坐标，缩放级别
+            setTimeout(function () {
+              baiduMap.addOverlay(subwayStyle) //添加路线
+
+              baiduMap.addOverlay(zhongLabel) //添加地铁起点和终点覆盖物 图标  如果不需要删掉
+            }, 300)
+          }, 500)
+        }
+      })
+
+      $('.subwayText li').click(function () {
+        let _text = $(this).attr('type')
+        let _name = $(this).attr('name')
+        subwayNum = $(this).attr('num')
+        if ($(this).attr('second')) {
+          stationObj.stationname = $(this).attr('second')
+        } else {
+          stationObj.stationname = ''
+        } //如果点的是地铁站
+
+        stationObj.itemNum = $(this).attr('num') //哪段地铁
+        stationObj.lineName = _name
+        // console.log('_text',_text)
+        // baiduMap.clearOverlays();//清除所有的Overlay
+
+        // console.log('-------',baiduMap.getOverlays())
+        // baiduMap.enableMassClear()
+        // let allOverlay=baiduMap.getOverlays()//如果覆盖物用了enableMassClear:false  则需要循环enableMassClear这样清除，clearOverlays无法清除
+        // for(let i=0;i<allOverlay.length;i++){//清除地铁线
+        // 	allOverlay[i].enableMassClear()
+        // }
+
+        marker.disableMassClear() //紫色图标 不需要对当前定位点 marker进行移除操作，所以设置
+        baiduMap.clearOverlays()
+        console.log( subwaylineData)
+        subwaylineData.getBusList(_name)
+
+        retrunLineColor = lineColorData[_name] //地铁线颜色
+        // console.log('retrunLineColor',retrunLineColor)
+
+        // 清空覆盖物不能单纯使用  map.clearOverlays()，这样只能清除普通的点。而对于聚合点而言，只是暂时消失，鼠标一拖动或者放大缩小就又出现了。
+        // 要用 markerClusterer.clearMarkers()  的方法才能真正清除
+        // 注意var markerClusterer=new BMapLib.MarkerClusterer(map, {markers:markers}) 只需要在全局中初始化一次
+      })
+    </script>
+  </body>
+</html>
