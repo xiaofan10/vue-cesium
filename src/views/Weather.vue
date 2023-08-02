@@ -4,7 +4,7 @@ import { Card } from 'ant-design-vue'
 import * as Cesium from 'cesium'
 import { onMounted, ref } from 'vue'
 import { getViewerInitConfig } from '../utils/config'
-import { BaiduImageryProvider } from '../utils/cesiumUtils'
+import { SnowEffect } from '../utils/cesiumUtils'
 
 const cardStyle = {
   background: 'rgba(78,118,205,0.5)',
@@ -18,49 +18,49 @@ onMounted(async () => {
   // 渲染地球
   viewer = new Cesium.Viewer(root.value, {
     ...getViewerInitConfig(),
-    terrain: Cesium.Terrain.fromWorldTerrain(),
+    terrain: Cesium.Terrain.fromWorldTerrain()
   })
-   
-//   viewer.imageryLayers.addImageryProvider(
-//     new BaiduImageryProvider({
-//       url: 'http://online{s}.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&p=1'
-//     })
-//   )
+
+  viewer.SnowEffect = SnowEffect
+  new SnowEffect(viewer, {
+    snowSize: 0.1, // 雪花大小
+    snowSpeed: 600.0 // 雪速
+  })
 
   //   // 渲染海拔高度范围
   const scene = viewer.scene
   const elevationBandMaterial = Cesium.createElevationBandMaterial({
-      scene: scene,
-      layers: [
-        {
-          entries: [
-            {
-              height: 500.0,
-              color: new Cesium.Color(255.0, 0.0, 0.0, 1.0)
-            },
-            {
-              height: 700.0,
-              color: new Cesium.Color(1.0, 1.0, 1.0, 1.0)
-            }
-          ],
+    scene: scene,
+    layers: [
+      {
+        entries: [
+          {
+            height: 500.0,
+            color: new Cesium.Color(255.0, 0.0, 0.0, 1.0)
+          },
+          {
+            height: 700.0,
+            color: new Cesium.Color(1.0, 1.0, 1.0, 1.0)
+          }
+        ]
         //   extendDownwards: true,
         //   extendUpwards: true
-        },
-        {
-          entries: [
-            {
-              height: 100.0,
-              color: new Cesium.Color(1.0, 0.0, 0.0, 0.5)
-            },
-            {
-              height: 200.0,
-              color: new Cesium.Color(1.0, 0.0, 0.0, 0.5)
-            }
-          ]
-        }
-      ]
-    })
-    viewer.scene.globe.material = elevationBandMaterial
+      },
+      {
+        entries: [
+          {
+            height: 100.0,
+            color: new Cesium.Color(1.0, 0.0, 0.0, 0.5)
+          },
+          {
+            height: 200.0,
+            color: new Cesium.Color(1.0, 0.0, 0.0, 0.5)
+          }
+        ]
+      }
+    ]
+  })
+  viewer.scene.globe.material = elevationBandMaterial
 })
 </script>
 

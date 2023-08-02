@@ -26,5 +26,6 @@ export default defineConfig({
   },
   define: {
     appName: JSON.stringify('my-custom-name')
-  }
+  },
+ 
 })

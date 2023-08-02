@@ -46,6 +46,7 @@ onMounted(async () => {
         // trailTime: 100, // 轨迹存在时间
         // resolution: 5
       },
+      
       model: {
         gltf: './glb/air.glb',
         scale: 1.0,

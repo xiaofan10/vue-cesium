@@ -28,7 +28,10 @@ onMounted(async () => {
       Cesium.ArcGisMapServerImageryProvider.fromBasemapType(Cesium.ArcGisBaseMapType.SATELLITE)
     )
   })
- 
+
+  
+  // viewer.scene.screenSpaceCameraController.maximumZoomDistance = 999999999.0
+  // viewer.scene.globe.enableLighting = true
 })
 </script>
 

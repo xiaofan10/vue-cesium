@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { getViewerInitConfig } from '../utils/config'
 const root = ref(null)
 let viewer
-onMounted(() => {
+onMounted(async () => {
   console.log(root.value)
   viewer = new Cesium.Viewer(root.value, getViewerInitConfig())
   // 定位到纽约
@@ -18,6 +18,9 @@ onMounted(() => {
         roll: Cesium.Math.toRadians(0), // 视角垂直旋转/歪头
     }
   })
+  // 添加OSM bulidings
+  const tiles = await Cesium.createOsmBuildingsAsync()
+ viewer.scene.primitives.add(tiles);
 //   viewer.camera.flyTo  // 飞到哪个位置
 //   viewer.camera.lookAt // 锁定位置
 })

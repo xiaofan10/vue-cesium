@@ -36,6 +36,12 @@ export const getRoutes = () => [
     component: () => import('../views/tiles/TilesCar.vue')
   },
   {
+    path: '/Lession', // 课程
+    name: 'Lession',
+    title: 'Lession',
+    component: () => import('../views/lession/Lession.vue')
+  },
+  {
     path: '/GroupEntities', // 组合广告牌
     name: 'GroupEntities',
     title: 'GroupEntities',
@@ -94,6 +100,18 @@ export const getRoutes = () => [
     name: 'Terrain',
     title: 'Terrain',
     component: () => import('../views/Terrain.vue')
+  },
+  {
+    path: '/Tools', // map经纬度路径获取
+    name: 'Tools',
+    title: 'Tools',
+    component: () => import('../views/Tools.vue')
+  },
+  {
+    path: '/Weather', // map经纬度路径获取
+    name: 'Weather',
+    title: 'Weather',
+    component: () => import('../views/Weather.vue')
   }
 ]
 
