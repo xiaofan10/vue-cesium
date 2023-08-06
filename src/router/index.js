@@ -112,6 +112,12 @@ export const getRoutes = () => [
     name: 'Weather',
     title: 'Weather',
     component: () => import('../views/Weather.vue')
+  },
+  {
+    path: '/Fog', // map经纬度路径获取
+    name: 'Fog',
+    title: 'Fog',
+    component: () => import('../views/weather/Fog.vue')
   }
 ]
 

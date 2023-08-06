@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div class="sheet" ref="sheet"></div>
+      <div class="tooltip-trigger" :style="tooltipStyle">sdfsdfsdfs</div>
     <div class="tooltip-panel">
       <Card
         class="card"
@@ -46,6 +47,10 @@
           <p>加载Event</p>
           <Button size="small" @click="addEvent()">Add</Button>
         </div>
+        <div>
+          <p>后期处理PostProcessStage</p>
+          <Button size="small" @click="addSpecialEffect()">Add</Button>
+        </div>
         <p>Cesium.createElevationBandMaterial</p>
       </Card>
     </div>
@@ -54,20 +59,28 @@
 
 <script setup>
 import * as Cesium from 'cesium'
-import { onMounted, onUnmounted, onBeforeUnmount, ref } from 'vue'
-import { Card, Button } from 'ant-design-vue'
+import { onMounted, onUnmounted, onBeforeUnmount, ref, reactive } from 'vue'
+import { Card, Button, Tooltip } from 'ant-design-vue'
 import { getViewerInitConfig } from '../../utils/config'
 import { BaiduImageryProvider } from '../../utils/cesiumUtils'
 import CesiumNavigation from 'cesium-navigation-es6'
-
 
 const cardStyle = {
   background: 'rgba(78,118,205,0.5)',
   color: '#fff'
 }
+const tooltipStyle = reactive({
+  display: 'none',
+  lett:'100px',
+  top: '100px'
+})
+
+const tooltipVisible = ref(true)
 
 const sheet = ref(null)
-let viewer, tilesCollection = []
+const tooltip = ref(null)
+let viewer,
+  tilesCollection = []
 
 const setSceneBackground = (color) => {
   viewer.scene.skyBox = new Cesium.SkyBox({ show: false })
@@ -146,37 +159,60 @@ const setMap = async (type) => {
     default:
   }
 }
-
+let edge
+// 增加特效
+const addSpecialEffect = () => {
+  // 增加骨架
+  edge = Cesium.PostProcessStageLibrary.createEdgeDetectionStage()
+  edge.uniforms.color = Cesium.Color.YELLOW
+  edge.selected = []
+  viewer.scene.postProcessStages.enabled = true;
+  viewer.scene.postProcessStages.add(Cesium.PostProcessStageLibrary.createSilhouetteStage([edge]))
+}
+// 屏幕添加鼠标左键事件
 const addEvent = async () => {
   // 屏幕空间事件操作
   const handle = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
-  handle.getInputAction((...res) => {
-    console.log(res,'getInputAction')
-  },Cesium.ScreenSpaceEventType.LEFT_CLICK)
+  handle.getInputAction((...res) => {}, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+  // 左键单击事件
   handle.setInputAction((res) => {
     const feature = viewer.scene.pick(res.position)
-    console.log(feature,'setInputAction')
     // feature.getPropertyIds().forEach((id) => {
     //   console.log(feature.getProperty(id))
     // })
-    feature.color = Cesium.Color.RED
+    if (feature) {
+      feature.color = Cesium.Color.RED
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
 
-  },Cesium.ScreenSpaceEventType.LEFT_CLICK)
-  console.log(handle)
+// 移动事件
+  handle.setInputAction((res) => {
+    edge.selected = []
+    const feature = viewer.scene.pick(res.endPosition)
+    if (feature && edge) {
+      edge.selected.push( feature)
+      const {x,y} = res.endPosition
+      tooltipStyle.left = `${x}px`
+      tooltipStyle.top = `${y}px`
+      tooltipStyle.display = 'block'
+    } else {
+      tooltipStyle.display = 'none'
+    }
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
 }
 
 const bindTilesEvent = (tileset) => {
   tileset.tileLoad.addEventListener((tile) => {
-    const content = tile.content;
-    const featuresLength = content.featuresLength;
+    const content = tile.content
+    const featuresLength = content.featuresLength
     console.log(content)
     for (let i = 0; i <= featuresLength; ++i) {
-    // const feature = content.getFeature(i);
-  }
+      // const feature = content.getFeature(i);
+    }
   })
-  tileset.tileUnload.addEventListener(function(tile) {
-    console.log(tile,'unload');
-});
+  tileset.tileUnload.addEventListener(function (tile) {
+    console.log(tile, 'unload')
+  })
 }
 
 const addTiles = async () => {
@@ -199,7 +235,7 @@ const addTiles = async () => {
       //   new Cesium.HeadingPitchRange(0, -20, 0)
       // )
       //高度偏差，向上是正数，向下是负数
-      var heightOffset = -54.5 //计算tileset的绑定范围
+      var heightOffset = -1.0 //计算tileset的绑定范围
       var boundingSphere = tileset.boundingSphere //计算中心点位置
 
       var cartographic = Cesium.Cartographic.fromCartesian(boundingSphere.center) //计算中心点位置的地表坐标
@@ -218,12 +254,12 @@ const addTiles = async () => {
 
       var translation = Cesium.Cartesian3.subtract(offset, current, new Cesium.Cartesian3()) //tileset.modelMatrix转换 计算两个笛卡尔坐标的差值
 
-      tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation) 
+      tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation)
     }
 
     setTilesHeight()
 
-    viewer.flyTo(primitiveTiles)
+    viewer.zoomTo(primitiveTiles)
   } catch (error) {
     console.error(`Error creating [addTiles] tileset: ${error}`)
   }
@@ -336,6 +372,8 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+
+
 .container {
   position: absolute;
   top: 0;
@@ -345,6 +383,14 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  .tooltip-trigger {
+    position: absolute;
+    border: 1px solid #000;
+    background:#000;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+  }
   .sheet {
     width: 100%;
     height: 100%;
