@@ -1,3 +1,11 @@
+import { installRadarLineMaterialProperty } from './RadarLineMaterialProperty'
+import { installRadarWaveMaterialProperty } from './RadarWaveMaterialProprety'
+import { installEllipsoidTrailMaterialProperty } from './EllipsoidTrailMaterialProperty'
+import { installCircleWaveMaterialProperty } from './CircleWaveMatreialProperty'
+import { installRadarScanMaterialProperty } from './RadarScanMaterialProperty'
+import { installWallDiffuseMaterialProperty } from './WallDiffuseMaterialProprety'
+import { installWallDynamicMaterialProperty } from './WallDynamicMaterialProperty'
+
 export default class Material {
   constructor(Cesium) {
     this.Cesium = Cesium
@@ -39,114 +47,20 @@ export default class Material {
 
   _installMaterial(Cesium) {
     this._installWaveCircleMaterial(Cesium)
-    this._installDynamicWallMaterialProperty(Cesium)
-    // 雷达
-    this._installRadarLineMaterial(Cesium)
-  }
-
-  _installDynamicWallMaterialProperty(Cesium) {
-    /**
-     * @description:动态立体墙材质
-     * @date: 2022-02-11
-     */
-
-    //动态墙材质
-    function DynamicWallMaterialProperty(options) {
-      // 默认参数设置
-      this._definitionChanged = new Cesium.Event()
-      this._color = undefined
-      this._colorSubscription = undefined
-      this.color = options.color
-      this.duration = options.duration
-      this.trailImage = options.trailImage
-      this._time = new Date().getTime()
-      this.viewer = options.viewer
-    }
-    Object.defineProperties(DynamicWallMaterialProperty.prototype, {
-      isConstant: {
-        get: function () {
-          return false
-        }
-      },
-      definitionChanged: {
-        get: function () {
-          return this._definitionChanged
-        }
-      },
-      color: Cesium.createPropertyDescriptor('color')
-    })
-    DynamicWallMaterialProperty.prototype.getType = function (time) {
-      return 'DynamicWall'
-    }
-    DynamicWallMaterialProperty.prototype.getValue = function (time, result) {
-      if (!Cesium.defined(result)) {
-        result = {}
-      }
-      result.color = Cesium.Property.getValueOrClonedDefault(
-        this._color,
-        time,
-        Cesium.Color.WHITE,
-        result.color
-      )
-      if (this.trailImage) {
-        result.image = this.trailImage
-      } else {
-        result.image = Cesium.Material.DynamicWallImage
-      }
-
-      if (this.duration) {
-        result.time = ((new Date().getTime() - this._time) % this.duration) / this.duration
-      }
-      // this.viewer.scene.requestRender()
-      // Cesium.Scene.requestRender()
-      return result
-    }
-    DynamicWallMaterialProperty.prototype.equals = function (other) {
-      return (
-        this === other ||
-        (other instanceof DynamicWallMaterialProperty &&
-          Cesium.Property.equals(this._color, other._color))
-      )
-    }
-    Cesium.Scene.DynamicWallMaterialProperty = DynamicWallMaterialProperty
-    Cesium.Material.DynamicWallType = 'DynamicWall'
-    const image = this.getLinearGradintMaterial([
-      [0, '#000'],
-      [0.5, '#f0f'],
-      [1, '#0f0']
-    ])
-    console.log(image)
-    Cesium.Material.DynamicWallImage = '/img/mark.png'
-    //  './img/sky.jpg'
-
-    Cesium.Material.DynamicWallSource =
-      'czm_material czm_getMaterial(czm_materialInput materialInput)\n\
-      {\n\
-      czm_material material = czm_getDefaultMaterial(materialInput);\n\
-      vec2 st = materialInput.st;\n\
-      vec4 colorImage = texture(image, vec2(fract(st.t - time), st.t));\n\
-      vec4 fragColor;\n\
-      fragColor.rgb = color.rgb / 1.0;\n\
-      fragColor = czm_gammaCorrect(fragColor);\n\
-      material.alpha = colorImage.a * color.a;\n\
-      material.diffuse = color.rgb;\n\
-      material.emission = fragColor.rgb;\n\
-      return material;\n\
-      }'
-    Cesium.Material._materialCache.addMaterial(Cesium.Material.DynamicWallType, {
-      fabric: {
-        type: Cesium.Material.DynamicWallType,
-        uniforms: {
-          color: new Cesium.Color(1.0, 1.0, 1.0, 1),
-          image: Cesium.Material.DynamicWallImage,
-          time: 0
-        },
-        source: Cesium.Material.DynamicWallSource
-      },
-      translucent: function (material) {
-        return true
-      }
-    })
+    // ellipse 雷达材质
+    installRadarLineMaterialProperty(Cesium)
+    // ellipse 波纹雷达材质
+    installRadarWaveMaterialProperty(Cesium)
+    // ellipse 雷达图
+    installRadarScanMaterialProperty(Cesium)
+    // ellipsoid 球体轨迹光效材质
+    installEllipsoidTrailMaterialProperty(Cesium)
+    // ellipse 水波纹材质
+    installCircleWaveMaterialProperty(Cesium)
+    // wall 泛光材质
+    installWallDiffuseMaterialProperty(Cesium)
+    // 动态强材质
+    installWallDynamicMaterialProperty(Cesium)
   }
 
   // 波动圆材质
@@ -278,112 +192,6 @@ export default class Material {
       },
 
       translucent: function () {
-        return true
-      }
-    })
-  }
-
-  // 雷达扫描
-  _installRadarLineMaterial(Cesium) {
-    /*
-     * @Description: 雷达线效果（参考开源代码）
-     * @Version: 1.0
-     * @Author: Julian
-     * @Date: 2022-03-04 19:27:08
-     * @LastEditors: Julian
-     * @LastEditTime: 2022-03-04 19:29:58
-     */
-    class RadarLineMaterialProperty {
-      constructor(options) {
-        this._definitionChanged = new Cesium.Event()
-        this._color = undefined
-        this._speed = undefined
-        this.color = options.color
-        this.speed = options.speed
-      }
-
-      get isConstant() {
-        return false
-      }
-
-      get definitionChanged() {
-        return this._definitionChanged
-      }
-
-      getType(time) {
-        return Cesium.Material.RadarLineMaterialType
-      }
-
-      getValue(time, result) {
-        if (!Cesium.defined(result)) {
-          result = {}
-        }
-
-        result.color = Cesium.Property.getValueOrDefault(
-          this._color,
-          time,
-          Cesium.Color.RED,
-          result.color
-        )
-        result.speed = Cesium.Property.getValueOrDefault(this._speed, time, 10, result.speed)
-        return result
-      }
-
-      equals(other) {
-        return (
-          this === other ||
-          (other instanceof RadarLineMaterialProperty &&
-            Cesium.Property.equals(this._color, other._color) &&
-            Cesium.Property.equals(this._speed, other._speed))
-        )
-      }
-    }
-
-    Object.defineProperties(RadarLineMaterialProperty.prototype, {
-      color: Cesium.createPropertyDescriptor('color'),
-      speed: Cesium.createPropertyDescriptor('speed')
-    })
-
-    Cesium.Scene.RadarLineMaterialProperty = RadarLineMaterialProperty
-    Cesium.Material.RadarLineMaterialProperty = 'RadarLineMaterialProperty'
-    Cesium.Material.RadarLineMaterialType = 'RadarLineMaterialType'
-    Cesium.Material.RadarLineMaterialSource = `
-      uniform vec4 color;
-      uniform float speed;
-
-      czm_material czm_getMaterial(czm_materialInput materialInput){
-      czm_material material = czm_getDefaultMaterial(materialInput);
-      vec2 st = materialInput.st * 2.0 - 1.0;
-      float t = czm_frameNumber * speed / 1000.0 ;
-      vec3 col = vec3(0.0);
-      vec2 p = vec2(sin(t), cos(t));
-      float d = length(st - dot(p, st) * p);
-      if (dot(st, p) < 0.) {
-          d = length(st);
-      }
-
-      col = .006 / d * color.rgb;
-
-      if(distance(st,vec2(0)) >  0.99 ){
-          col =color.rgb;
-      }
-
-      material.alpha  = pow(length(col),2.0);
-      material.diffuse = col * 3.0 ;
-      return material;
-      }
-   `
-
-    Cesium.Material._materialCache.addMaterial(Cesium.Material.RadarLineMaterialType, {
-      fabric: {
-        type: Cesium.Material.RadarLineMaterialType,
-        uniforms: {
-          color: new Cesium.Color(1.0, 0.0, 0.0, 1.0),
-          speed: 10.0
-        },
-        source: Cesium.Material.RadarLineMaterialSource
-      },
-      translucent: function (material) {
         return true
       }
     })

@@ -118,6 +118,12 @@ export const getRoutes = () => [
     name: 'Fog',
     title: 'Fog',
     component: () => import('../views/weather/Fog.vue')
+  },
+  {
+    path: '/MaterialRadarLine', // 雷达图
+    name: 'MaterialRadarLine',
+    title: 'MaterialRadarLine',
+    component: () => import('../views/lession/MaterialRadarLine.vue')
   }
 ]
 
