@@ -64,32 +64,30 @@ const initCesium = () => {
 const setMaterialPolyLineLight = () => {
   const m = new Cesium.Scene.PolylineLightMaterialProperty({
     image: './img/colors.png',
-    color: new Cesium.Color(1.0, 1.0, 0.0, 0.7),
+    color: Cesium.Color.RED,
     speed: 20.0,
     duration: 2000
   })
-  console.log(m)
   const polylineEntity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
-    // polyline: {
-    //   positions: [
-    //     Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
-    //     Cesium.Cartesian3.fromDegrees(113.9236839, 22.428061),
-    //     Cesium.Cartesian3.fromDegrees(113.8236839, 22.328061)
-    //   ],
-    //   // PolylineLightMaterialProperty
-    //   material: m
-    // }
-    cylinder: {
-      length: 500 / 2,
-      topRadius: 0,
-      bottomRadius: 10,
-      material: new Cesium.Scene.CircleFadeMaterialProperty({
-        color: Cesium.Color.fromCssColorString('#02ff00'),
-        speed: 20.0
-      }),
-      slices: 128
+    polyline: {
+      positions: [
+        Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
+        Cesium.Cartesian3.fromDegrees(113.9236839, 22.428061),
+        Cesium.Cartesian3.fromDegrees(113.8236839, 22.328061)
+      ],
+      material: m
     }
+    // cylinder: {
+    //   length: 500 / 2,
+    //   topRadius: 0,
+    //   bottomRadius: 10,
+    //   material: new Cesium.Scene.CircleFadeMaterialProperty({
+    //     color: Cesium.Color.fromCssColorString('#02ff00'),
+    //     speed: 20.0
+    //   }),
+    //   slices: 128
+    // }
     // ellipse: {
     //   semiMajorAxis: 1000,
     //   semiMinorAxis: 1000,

@@ -8,7 +8,7 @@ function installPolylineLightMaterialProperty(Cesium) {
       this.color = options.color || Cesium.Color.BLUE
       this.duration = options.duration || 1000
       this._time = undefined
-      this.init()
+      // this.init()
     }
 
     get isvarant() {
@@ -94,5 +94,35 @@ function installPolylineLightMaterialProperty(Cesium) {
   Cesium.Material.PolylineLightMaterialProperty = 'PolylineLightMaterialProperty'
   Cesium.Material.PolylineLightMaterialType = 'PolylineLightMaterialType'
   Cesium.Scene.PolylineLightMaterialProperty = PolylineLightMaterialProperty
+  Cesium.Material.PolylineLightMaterialSource = `czm_material czm_getMaterial(czm_materialInput materialInput)\n\
+              {\n\
+                  czm_material material = czm_getDefaultMaterial(materialInput);\n\
+                  vec2 st = materialInput.st;\n\
+                  \n\
+                  if(texture(image, vec2(0.0, 0.0)).a == 1.0){\n\
+                      discard;\n\
+                  }else{\n\
+                      material.alpha = texture(image, vec2(1.0 - fract(time - st.s), st.t)).a * color.a;\n\
+                  }\n\
+                  \n\
+                  material.diffuse = max(color.rgb * material.alpha * 3.0, color.rgb);\n\
+                  \n\
+                  return material;\n\
+              }\n\
+              `
+  Cesium.Material._materialCache.addMaterial(Cesium.Material.PolylineLightMaterialType, {
+    fabric: {
+      type: Cesium.Material.PolylineLightMaterialType,
+      uniforms: {
+        color: Cesium.Color.RED,
+        image: './img/colors.png',
+        time: 20
+      },
+      source: Cesium.Material.PolylineLightMaterialSource
+    },
+    translucent: function () {
+      return true
+    }
+  })
 }
 export { installPolylineLightMaterialProperty }
