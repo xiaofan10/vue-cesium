@@ -12,7 +12,9 @@
         <p>Cession 初始化</p>
         <div>
           <p>Material Setting</p>
-
+          <Button class="button" type="primary" size="small" @click="setMaterialPolyLineLight()"
+            >Polyline Light</Button
+          >
           <Button class="button" type="primary" size="small" @click="setMaterialRadarLine()"
             >Radar Line</Button
           >
@@ -59,6 +61,47 @@ const initCesium = () => {
   viewer = new Cesium.Viewer(sheet.value, getViewerInitConfig())
 }
 
+const setMaterialPolyLineLight = () => {
+  const m = new Cesium.Scene.PolylineLightMaterialProperty({
+    image: './img/colors.png',
+    color: new Cesium.Color(1.0, 1.0, 0.0, 0.7),
+    speed: 20.0,
+    duration: 2000
+  })
+  console.log(m)
+  const polylineEntity = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
+    // polyline: {
+    //   positions: [
+    //     Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
+    //     Cesium.Cartesian3.fromDegrees(113.9236839, 22.428061),
+    //     Cesium.Cartesian3.fromDegrees(113.8236839, 22.328061)
+    //   ],
+    //   // PolylineLightMaterialProperty
+    //   material: m
+    // }
+    cylinder: {
+      length: 500 / 2,
+      topRadius: 0,
+      bottomRadius: 10,
+      material: new Cesium.Scene.CircleFadeMaterialProperty({
+        color: Cesium.Color.fromCssColorString('#02ff00'),
+        speed: 20.0
+      }),
+      slices: 128
+    }
+    // ellipse: {
+    //   semiMajorAxis: 1000,
+    //   semiMinorAxis: 1000,
+    //   material: new Cesium.Scene.CircleFadeMaterialProperty({
+    //     color: new Cesium.Color(1.0, 1.0, 0.0, 0.7),
+    //     speed: 20.0
+    //   })
+    // }
+  })
+  viewer.zoomTo(polylineEntity)
+}
+
 const setMaterialRadarLine = () => {
   const radarEntity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(113.9236839, 22.528061),
@@ -68,6 +111,17 @@ const setMaterialRadarLine = () => {
       material: new Cesium.Scene.RadarLineMaterialProperty({
         color: new Cesium.Color(1.0, 1.0, 0.0, 0.7),
         speed: 20.0
+      })
+    }
+  })
+  const x = viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(113.9236839, 22.529161),
+    ellipse: {
+      semiMajorAxis: 1000,
+      semiMinorAxis: 1000,
+      material: new Cesium.Scene.RadarLineMaterialProperty({
+        color: Cesium.Color.GREEN,
+        speed: 10.0
       })
     }
   })
@@ -191,7 +245,7 @@ const setMaterialWallDynamic = () => {
         direction: '+',
         count: 0,
         color: Cesium.Color.BLUE,
-        duration: 2000
+        duration: 1000
       })
     }
   })

@@ -102,8 +102,8 @@ function installWallDynamicMaterialProperty(Cesium) {
     fabric: {
       type: MaterialType,
       uniforms: {
-        color: new Color(1.0, 0.0, 0.0, 0.5),
-        image: './img/color2.png',
+        color: new Color(1.0, 0.0, 0.0, 1),
+        image: './img/color3.png',
         time: 0
       },
       source: _getDirectionWallShader({

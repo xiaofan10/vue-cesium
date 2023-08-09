@@ -5,6 +5,8 @@ import { installCircleWaveMaterialProperty } from './CircleWaveMatreialProperty'
 import { installRadarScanMaterialProperty } from './RadarScanMaterialProperty'
 import { installWallDiffuseMaterialProperty } from './WallDiffuseMaterialProprety'
 import { installWallDynamicMaterialProperty } from './WallDynamicMaterialProperty'
+import { installPolylineLightMaterialProperty } from './PolylineLightMaterialProperty'
+import { installCircleFadeMaterialProperty } from './CircleFadeMaterialProperty'
 
 export default class Material {
   constructor(Cesium) {
@@ -61,6 +63,10 @@ export default class Material {
     installWallDiffuseMaterialProperty(Cesium)
     // 动态强材质
     installWallDynamicMaterialProperty(Cesium)
+    // polyline
+    installPolylineLightMaterialProperty(Cesium)
+
+    installCircleFadeMaterialProperty(Cesium)
   }
 
   // 波动圆材质
