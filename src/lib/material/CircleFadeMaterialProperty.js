@@ -7,7 +7,6 @@ function installCircleFadeMaterialProperty(Cesium) {
       this.color = Cesium.defaultValue(options.color, new Cesium.Color(0, 0, 0, 0))
       this._duration = options.duration || 1e3
       this._time = undefined
-      this.init()
     }
 
     getShader() {
@@ -89,6 +88,38 @@ function installCircleFadeMaterialProperty(Cesium) {
       })
     }
   }
+  Cesium.Material.CircleFadeMaterialType = 'CircleFadeMaterialType'
+
+  Cesium.Material._materialCache.addMaterial(Cesium.Material.CircleFadeMaterialType, {
+    fabric: {
+      type: Cesium.Material.CircleFadeMaterialType,
+      uniforms: {
+        color: Cesium.Color.RED,
+        time: 20
+      },
+      source: `
+        uniform vec4 color;
+        uniform float speed;
+        czm_material czm_getMaterial(czm_materialInput materialInput)\n
+        {\n
+            czm_material material = czm_getDefaultMaterial(materialInput);\n
+            material.diffuse = 1.5 * color.rgb;\n
+            vec2 st = materialInput.st;\n
+            float dis = distance(st, vec2(0.5, 0.5));\n
+            float per = fract(time);\n
+            if(dis > per * 0.5){\n
+                //material.alpha = 0.0;\n
+                discard;\n
+            }else {\n
+                material.alpha = color.a  * dis / per / 2.0;\n
+            }\n
+            return material;\n
+        }`
+    },
+    translucent: function () {
+      return !0
+    }
+  })
 
   Cesium.Scene.CircleFadeMaterialProperty = CircleFadeMaterialProperty
 }
